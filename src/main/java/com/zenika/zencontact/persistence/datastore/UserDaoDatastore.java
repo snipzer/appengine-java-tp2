@@ -46,12 +46,7 @@ public class UserDaoDatastore implements UserDao {
         } catch(EntityNotFoundException e) {
             e.printStackTrace();
         }
-        return User.create()
-                .id(entity.getKey().getId())
-                .firstName((String) entity.getProperty("firstName"))
-                .lastName((String) entity.getProperty("lastName"))
-                .email((String) entity.getProperty("email"))
-                .notes((String) entity.getProperty("notes"));
+        return createUser(entity);
     }
 
     public List<User> getAll() {
@@ -61,7 +56,19 @@ public class UserDaoDatastore implements UserDao {
                 .addProjection(new PropertyProjection("lastName", String.class))
                 .addProjection(new PropertyProjection("email", String.class))
                 .addProjection(new PropertyProjection("notes", String.class));
-
+        PreparedQuery pq = datastore.prepare(q);
+        for(Entity e : pq.asIterable()) {
+            contacts.add(createUser(e));
+        }
         return contacts;
+    }
+
+    private User createUser(Entity entity) {
+        return User.create()
+                .id(entity.getKey().getId())
+                .firstName((String) entity.getProperty("firstName"))
+                .lastName((String) entity.getProperty("lastName"))
+                .email((String) entity.getProperty("email"))
+                .notes((String) entity.getProperty("notes"));
     }
 }
