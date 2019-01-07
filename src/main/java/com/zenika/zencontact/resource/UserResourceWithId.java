@@ -3,6 +3,8 @@ package com.zenika.zencontact.resource;
 import com.zenika.zencontact.domain.User;
 import com.google.gson.Gson;
 import com.zenika.zencontact.persistence.datastore.UserDaoDatastore;
+import com.zenika.zencontact.persistence.objectify.UserDaoObjectify;
+
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,23 +32,22 @@ public class UserResourceWithId extends HttpServlet {
         response.setStatus(404);
         return;
     }
-    User user = UserDaoDatastore.getInstance().get(id);
+    User user = UserDaoObjectify.getInstance().get(id);
     response.setContentType("application/json; charset=utf-8");
     response.getWriter().println(new Gson().toJson(user));
   }
 
   @Override
-  public void doPut(HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
+  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Long id = getId(request);
     if(id == null) {
         response.setStatus(404);
         return;
     }
     User user = new Gson().fromJson(request.getReader(), User.class);
-    User oldUser = UserDaoDatastore.getInstance().get(user.id);
+    User oldUser = UserDaoObjectify.getInstance().get(user.id);
     if(oldUser != null) {
-        UserDaoDatastore.getInstance().save(user);
+        UserDaoObjectify.getInstance().save(user);
     }
     response.setContentType("application/json; charset=utf-8");
     response.getWriter().println(new Gson().toJson(user));
@@ -60,9 +61,9 @@ public class UserResourceWithId extends HttpServlet {
         response.setStatus(404);
         return;
     }
-    User user = UserDaoDatastore.getInstance().get(id);
+    User user = UserDaoObjectify.getInstance().get(id);
     if(user != null) {
-        UserDaoDatastore.getInstance().delete(id);
+        UserDaoObjectify.getInstance().delete(id);
     }
   }
 }

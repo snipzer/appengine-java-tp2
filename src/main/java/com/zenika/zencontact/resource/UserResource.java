@@ -3,6 +3,7 @@ package com.zenika.zencontact.resource;
 import com.google.gson.Gson;
 import com.zenika.zencontact.persistence.datastore.UserDaoDatastore;
 import com.zenika.zencontact.domain.User;
+import com.zenika.zencontact.persistence.objectify.UserDaoObjectify;
 
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -19,17 +20,14 @@ public class UserResource extends HttpServlet {
       throws IOException {
     response.setContentType("application/json; charset=utf-8");
     response.getWriter().println(new Gson()
-            .toJsonTree(UserDaoDatastore.getInstance().getAll()).getAsJsonArray());
+            .toJsonTree(UserDaoObjectify.getInstance().getAll()).getAsJsonArray());
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     User user = new Gson().fromJson(request.getReader(), User.class);
-//    if(user.id == null) {
-//        user.id = Long.valueOf(UserRepository.USERS.size());
-//    }
-    user.id(UserDaoDatastore.getInstance().save(user));
+    user.id(UserDaoObjectify.getInstance().save(user));
     response.setContentType("application/json; charset=utf-8");
     response.setStatus(201);
     response.getWriter().println(new Gson().toJson(user));
